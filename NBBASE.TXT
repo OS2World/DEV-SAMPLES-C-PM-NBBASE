@@ -1,0 +1,36 @@
+NBBASE.EXE is a sample program that demonstrates setting up a notebook control.
+It creates a frame/client window and a notebook control is created as a child
+of the client window, similar to how the Settings notebook does it.
+
+The Notebook created by this program has pages with both MAJOR and MINOR tabs.
+
+All the Notebook pages are associated with dialog boxes. Those dialog boxes are
+not loaded and associated with the page until the user switches to the page that
+will contain the dialog. This is done because I believe it to be the fastest
+way to get the Notebook loaded. At a later date I will change my notebooks to
+load the dialogs on a WM_TIMER message if they aren't already loaded. I expect
+that will be the optimum way to load the dialogs.
+
+A Notebook control is actually a rather simple control. Think of it as just a
+way to stack up all your dialogs into a neat pile. If you have ever had an
+application that needed the user to go thru more than one dialog to accomplish
+something, you will appreciate that a notebook is the way to go. You can
+picture all those dialogs being scattered about on the screen. The Notebook's
+sole purpose is to take those dialogs and organize them so the user can input
+all their information in an organized fashion.
+
+The Notebook *does* bring with it some issues. The main one that I see is how
+to validate the fields in each dialog - when the user tabs out of the field,
+when the user switches notebook pages or when the user closes the notebook. In
+my notebooks I usually use a combination of the 3.
+
+Hopefully NBBASE will be of some use to beginning notebook programmers.
+
+Rick Fishman
+Code Blazers, Inc.
+4113 Apricot
+Irvine, CA 92720
+
+CIS ID: 72251,750
+
+
