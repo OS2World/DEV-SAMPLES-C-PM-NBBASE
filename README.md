@@ -6,7 +6,7 @@ NBBASE is a sample program that demonstrates setting up a notebook control.
 
 LICENSE
 ===============
-* Not Specified
+* BSD 3 Clauses
 
 COMPILE TOOLS
 ===============
