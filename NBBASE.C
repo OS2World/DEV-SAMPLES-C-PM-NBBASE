@@ -1,7 +1,6 @@
 /*********************************************************************
  *                                                                   *
- * MODULE NAME :  nbbase.c               AUTHOR:  Rick Fishman       *
- * DATE WRITTEN:  10-17-92                                           *
+ * MODULE NAME :  nbbase.c             				     *
  *                                                                   *
  * HOW TO RUN THIS PROGRAM:                                          *
  *                                                                   *
@@ -33,19 +32,14 @@
  *                                                                   *
  * HISTORY:                                                          *
  *                                                                   *
- *  10-17-92 - Program coded                                         *
- *  11-28-92 - Added code to size the window to the display          *
- *  12-04-92 - Used Notebook messages to get rid of global variables.*
- *                                                                   *
- *  Rick Fishman                                                     *
- *  Code Blazers, Inc.                                               *
- *  4113 Apricot                                                     *
- *  Irvine, CA. 92720                                                *
- *  CIS ID: 72251,750                                                *
- *                                                                   *
- *********************************************************************/
+ *  1992-10-17 - Program coded                                       	*
+ *  1992-11-28 - Added code to size the window to the display        	*
+ *  1992-12-04 - Used Notebook messages to get rid of global variables.	*
+ *  2023-07-20 - Changes to remove warning compiling with gcc.		*
+ *                                                                   	*
+ ***********************************************************************/
 
-#pragma strings(readonly)   // used for debug version of memory mgmt routines
+// #pragma strings(readonly)   // used for debug version of memory mgmt routines
 
 /*********************************************************************/
 /*------- Include relevant sections of the OS/2 header files --------*/
@@ -114,15 +108,15 @@ FNWP wpClient, wpPage1, wpPage2A, wpPage2B, wpPage3;
 
 NBPAGE nbpage[] =    // INFORMATION ABOUT NOTEBOOK PAGES (see NBBASE.H)
 {
-    { wpPage1,     "Page 1",  "Page ~1",  IDD_PAGE1,  EF_1,  FALSE, BKA_MAJOR },
+    { wpPage1, (unsigned char *) "Page 1", (unsigned char *) "Page ~1",  IDD_PAGE1,  EF_1,  FALSE, BKA_MAJOR },
 
-    { (PFNWP) NULL,"Page 2",  "Page ~2",  0,         0,      TRUE,  BKA_MAJOR },
+    { (PFNWP) NULL, (unsigned char *) "Page 2", (unsigned char *) "Page ~2",  0,         0,      TRUE,  BKA_MAJOR },
 
-    { wpPage2A,    "Page 2A", "Page 2~A", IDD_PAGE2A, EF_2A, FALSE, BKA_MINOR },
+    { wpPage2A, (unsigned char *) "Page 2A", (unsigned char *) "Page 2~A", IDD_PAGE2A, EF_2A, FALSE, BKA_MINOR },
 
-    { wpPage2B,    "Page 2B", "Page 2~B", IDD_PAGE2B, EF_2B, FALSE, BKA_MINOR },
+    { wpPage2B, (unsigned char *)  "Page 2B", (unsigned char *) "Page 2~B", IDD_PAGE2B, EF_2B, FALSE, BKA_MINOR },
 
-    { wpPage3,     "Page 3",  "Page ~3",  IDD_PAGE3,  EF_3,  FALSE, BKA_MAJOR }
+    { wpPage3, (unsigned char *) "Page 3", (unsigned char *) "Page ~3",  IDD_PAGE3,  EF_3,  FALSE, BKA_MAJOR }
 };
 
 #define PAGE_COUNT (sizeof( nbpage ) / sizeof( NBPAGE ))
@@ -142,10 +136,11 @@ NBPAGE nbpage[] =    // INFORMATION ABOUT NOTEBOOK PAGES (see NBBASE.H)
 /**********************************************************************/
 INT main( VOID )
 {
-    BOOL  fSuccess;
+    BOOL  fSuccess=0;
     HAB   hab;
-    HMQ   hmq;
-    HWND  hwndFrame, hwndClient;
+    HMQ   hmq =0;
+    HWND  hwndFrame =0;
+    HWND  hwndClient;
     QMSG  qmsg;
     ULONG flFrame = FRAME_FLAGS;
 
@@ -175,7 +170,7 @@ INT main( VOID )
         // by the notebook. CS_SIZEREDRAW so the notebook gets sized correctly
         // the first time the Frame/Client get drawn.
 
-        fSuccess = WinRegisterClass( hab, NOTEBOOK_WINCLASS, wpClient,
+        fSuccess = WinRegisterClass( hab, (PCSZ) NOTEBOOK_WINCLASS, wpClient,
                                      CS_CLIPCHILDREN | CS_SIZEREDRAW, 0 );
     else
     {
@@ -186,10 +181,10 @@ INT main( VOID )
 
     if( fSuccess )
         hwndFrame = WinCreateStdWindow( HWND_DESKTOP, 0, &flFrame,
-                                        NOTEBOOK_WINCLASS, NULL, 0, NULLHANDLE,
+                                        (PCSZ) NOTEBOOK_WINCLASS, NULL, 0, NULLHANDLE,
                                         ID_NBWINFRAME, &hwndClient );
     else
-        Msg( "WinRegisterClass RC(%X)", HABERR( hab ) );
+        Msg( (PSZ) "WinRegisterClass RC(%X)", HABERR( hab ) );
 
     if( hwndFrame )
     {
@@ -308,7 +303,7 @@ static BOOL TurnToFirstPage( HWND hwndClient )
     {
         fSuccess = FALSE;
 
-        Msg( "TurnToFirstPage BKM_QUERYPAGEID Invalid page specified" );
+        Msg( (PSZ) "TurnToFirstPage BKM_QUERYPAGEID Invalid page specified" );
     }
     else
     if( ulFirstPage )
@@ -317,13 +312,13 @@ static BOOL TurnToFirstPage( HWND hwndClient )
                                        MPFROMLONG( ulFirstPage ), NULL );
 
         if( !fSuccess )
-            Msg( "TurnToFirstPage BKM_TURNTOPAGE RC(%X)", HWNDERR( hwndNB ) );
+            Msg( (PSZ) "TurnToFirstPage BKM_TURNTOPAGE RC(%X)", HWNDERR( hwndNB ) );
     }
     else
     {
         fSuccess = FALSE;
 
-        Msg( "TurnToFirstPage BKM_QUERYPAGEID RC(%X)", HWNDERR( hwndNB ) );
+        Msg( (PSZ) "TurnToFirstPage BKM_QUERYPAGEID RC(%X)", HWNDERR( hwndNB ) );
     }
 
     return fSuccess;
@@ -366,10 +361,10 @@ static BOOL SetFramePos( HWND hwndFrame )
                                SWP_SIZE | SWP_MOVE | SWP_SHOW | SWP_ACTIVATE );
 
         if( !fSuccess )
-            Msg( "SetFramePos WinSetWindowPos RC(%X)", HWNDERR( hwndFrame ) );
+            Msg( (PSZ) "SetFramePos WinSetWindowPos RC(%X)", HWNDERR( hwndFrame ) );
     }
     else
-        Msg( "WinMapDlgPoints RC(%X)", HWNDERR( hwndFrame ) );
+        Msg( (PSZ) "WinMapDlgPoints RC(%X)", HWNDERR( hwndFrame ) );
 
     return fSuccess;
 }
@@ -412,7 +407,7 @@ static BOOL CreateNotebook( HWND hwndClient )
         if( !WinSendMsg( hwndNB, BKM_SETNOTEBOOKCOLORS,
                          MPFROMLONG( SYSCLR_FIELDBACKGROUND ),
                          MPFROMSHORT( BKA_BACKGROUNDPAGECOLORINDEX ) ) )
-            Msg( "BKM_SETNOTEBOOKCOLORS failed! RC(%X)", HWNDERR( hwndClient ));
+            Msg( (PSZ) "BKM_SETNOTEBOOKCOLORS failed! RC(%X)", HWNDERR( hwndClient ));
 
         if( !SetTabDimensions( hwndNB ) )
             fSuccess = FALSE;
@@ -427,7 +422,7 @@ static BOOL CreateNotebook( HWND hwndClient )
     {
         fSuccess = FALSE;
 
-        Msg( "Notebook creation failed! RC(%X)", HWNDERR( hwndClient ) );
+        Msg( (PSZ) "Notebook creation failed! RC(%X)", HWNDERR( hwndClient ) );
     }
 
     return fSuccess;
@@ -479,10 +474,10 @@ static BOOL SetUpPage( HWND hwndNB, INT iPage )
                         MPFROMP( nbpage[ iPage ].szStatusLineText ) );
 
             if( !fSuccess )
-                Msg( "BKM_SETSTATUSLINETEXT RC(%X)", HWNDERR( hwndNB ) );
+                Msg( (PSZ) "BKM_SETSTATUSLINETEXT RC(%X)", HWNDERR( hwndNB ) );
         }
         else
-            Msg( "BKM_SETPAGEDATA RC(%X)", HWNDERR( hwndNB ) );
+            Msg( (PSZ) "BKM_SETPAGEDATA RC(%X)", HWNDERR( hwndNB ) );
 
         // Set the text into the tab for this page.
 
@@ -493,14 +488,14 @@ static BOOL SetUpPage( HWND hwndNB, INT iPage )
                                    MPFROMP( nbpage[ iPage ].szTabText ) );
 
             if( !fSuccess )
-                Msg( "BKM_SETTABTEXT RC(%X)", HWNDERR( hwndNB ) );
+                Msg( (PSZ) "BKM_SETTABTEXT RC(%X)", HWNDERR( hwndNB ) );
         }
     }
     else
     {
         fSuccess = FALSE;
 
-        Msg( "BKM_INSERTPAGE RC(%X)", HWNDERR( hwndNB ) );
+        Msg( (PSZ) "BKM_INSERTPAGE RC(%X)", HWNDERR( hwndNB ) );
     }
 
     return fSuccess;
@@ -528,7 +523,7 @@ static BOOL SetTabDimensions( HWND hwndNB )
 
     if( !hps )
     {
-        Msg( "SetTabDimensions WinGetPS RC(%X)", HWNDERR( hwndNB ) );
+        Msg( (PSZ) "SetTabDimensions WinGetPS RC(%X)", HWNDERR( hwndNB ) );
 
         return FALSE;
     }
@@ -544,7 +539,7 @@ static BOOL SetTabDimensions( HWND hwndNB )
     {
         fm.lMaxBaselineExt = DEFAULT_NB_TAB_HEIGHT + (TAB_HEIGHT_MARGIN * 2);
 
-        Msg( "SetTabDimensions GpiQueryFontMetrics RC(%X)", HWNDERR( hwndNB ) );
+        Msg( (PSZ) "SetTabDimensions GpiQueryFontMetrics RC(%X)", HWNDERR( hwndNB ) );
     }
 
     // Calculate the longest tab text for both the MAJOR and MINOR pages
@@ -586,7 +581,7 @@ static BOOL SetTabDimensions( HWND hwndNB )
                     MPFROMSHORT( BKA_MAJORTAB ) );
 
         if( !fSuccess )
-            Msg( "BKM_SETDIMENSIONS(MAJOR) RC(%X)", HWNDERR( hwndNB ) );
+            Msg( (PSZ) "BKM_SETDIMENSIONS(MAJOR) RC(%X)", HWNDERR( hwndNB ) );
     }
 
     if( fSuccess && iLongestMinText )
@@ -596,7 +591,7 @@ static BOOL SetTabDimensions( HWND hwndNB )
                     MPFROMSHORT( BKA_MINORTAB ) );
 
         if( !fSuccess )
-            Msg( "BKM_SETDIMENSIONS(MINOR) RC(%X)", HWNDERR( hwndNB ) );
+            Msg( (PSZ) "BKM_SETDIMENSIONS(MINOR) RC(%X)", HWNDERR( hwndNB ) );
     }
 
     return fSuccess;
@@ -623,10 +618,10 @@ static INT GetStringSize( HPS hps, HWND hwndNB, PSZ szString )
 
     // Get the size, in pixels, of the string passed.
 
-    if( !GpiQueryTextBox( hps, strlen( szString ), szString, TXTBOX_COUNT,
+    if( !GpiQueryTextBox( hps, strlen( (const char *) szString ), szString, TXTBOX_COUNT,
                           aptl ) )
     {
-        Msg( "GetStringSize GpiQueryTextBox RC(%X)", HWNDERR( hwndNB ) );
+        Msg( (PSZ) "GetStringSize GpiQueryTextBox RC(%X)", HWNDERR( hwndNB ) );
 
         return 0;
     }
@@ -696,7 +691,7 @@ static BOOL ControlMsg( HWND hwnd, USHORT usControl, USHORT usEvent,
 /**********************************************************************/
 static VOID SetNBPage( HWND hwndClient, PPAGESELECTNOTIFY ppsn )
 {
-    HWND hwndDlg;
+    HWND hwndDlg = 0;
 
     // Get a pointer to the page information that is associated with this page.
     // It was stored in the page's PAGE DATA in the SetUpPage function.
@@ -708,7 +703,7 @@ static VOID SetNBPage( HWND hwndClient, PPAGESELECTNOTIFY ppsn )
         return;
     else if( pnbp == (PNBPAGE) BOOKERR_INVALID_PARAMETERS )
     {
-        Msg( "SetNBPage BKM_QUERYPAGEDATA Invalid page id" );
+        Msg( (PSZ) "SetNBPage BKM_QUERYPAGEDATA Invalid page id" );
 
         return;
     }
@@ -742,11 +737,11 @@ static VOID SetNBPage( HWND hwndClient, PPAGESELECTNOTIFY ppsn )
             ulPageNew = ulPageFwd;
 
         if( ulPageNew == (ULONG) BOOKERR_INVALID_PARAMETERS )
-            Msg( "SetNBPage BKM_QUERYPAGEID Invalid page specified" );
+            Msg( (PSZ) "SetNBPage BKM_QUERYPAGEID Invalid page specified" );
         else if( ulPageNew )
             if( !WinSendMsg( ppsn->hwndBook, BKM_TURNTOPAGE,
                              MPFROMLONG( ulPageNew ), NULL ) )
-                Msg( "BKM_TURNTOPAGE RC(%X)", HWNDERR( ppsn->hwndBook ) );
+                Msg( (PSZ) "BKM_TURNTOPAGE RC(%X)", HWNDERR( ppsn->hwndBook ) );
     }
     else
     {
@@ -757,7 +752,7 @@ static VOID SetNBPage( HWND hwndClient, PPAGESELECTNOTIFY ppsn )
         {
             hwndDlg = NULLHANDLE;
 
-            Msg( "SetNBPage BKM_QUERYPAGEWINDOWHWND Invalid page specified" );
+            Msg( (PSZ) "SetNBPage BKM_QUERYPAGEWINDOWHWND Invalid page specified" );
         }
         else if( !hwndDlg )
 
@@ -771,15 +766,14 @@ static VOID SetNBPage( HWND hwndClient, PPAGESELECTNOTIFY ppsn )
     // done by the notebook.
 
     if( hwndDlg && !pnbp->fParent )
-        if( !WinSetFocus( HWND_DESKTOP,
-                          WinWindowFromID( hwndDlg, pnbp->idFocus ) ) )
+        if( !WinSetFocus( HWND_DESKTOP, WinWindowFromID( hwndDlg, pnbp->idFocus ) ) )
         {
             // Bug in 2.0! Developers left some debug code in there!
 
             USHORT usErr = HWNDERR( ppsn->hwndBook );
 
             if( usErr != PMERR_WIN_DEBUGMSG )
-                Msg( "SetNBPage WinSetFocus RC(%X)", usErr );
+                Msg(  (PSZ) "SetNBPage WinSetFocus RC(%X)", usErr );
         }
 
     return;
@@ -822,11 +816,11 @@ static HWND LoadAndAssociate( HWND hwndClient, PNBPAGE pnbp,
 
             hwndDlg = NULLHANDLE;
 
-            Msg( "BKM_SETPAGEWINDOWHWND RC(%X)", HWNDERR( ppsn->hwndBook ) );
+            Msg( (PSZ) "BKM_SETPAGEWINDOWHWND RC(%X)", HWNDERR( ppsn->hwndBook ) );
         }
     }
     else
-        Msg( "LoadAndAssociate WinLoadDlg RC(%X)", HWNDERR( ppsn->hwndBook ) );
+        Msg( (PSZ) "LoadAndAssociate WinLoadDlg RC(%X)", HWNDERR( ppsn->hwndBook ) );
 
     return hwndDlg;
 }
@@ -959,7 +953,7 @@ VOID Msg( PSZ szFormat,... )
 
     va_start( argptr, szFormat );
 
-    vsprintf( szMsg, szFormat, argptr );
+    vsprintf( (char * restrict) szMsg, (const char * restrict) szFormat, argptr );
 
     va_end( argptr );
 
@@ -978,4 +972,3 @@ VOID Msg( PSZ szFormat,... )
 /************************************************************************
  *                      E N D   O F   S O U R C E                       *
  ************************************************************************/
-

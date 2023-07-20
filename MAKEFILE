@@ -1,46 +1,20 @@
-###########################################################################
-#                                                                         #
-# MAKE FILE FOR NBBASE.EXE                                                #
-#                                                                         #
-# NOTES:                                                                  #
-#                                                                         #
-#  To enable the C Set/2 memory management debugging code, uncomment the  #
-#  DEBUGALLOC macro. The debugging info will be sent to NBBASE.DBG.       #
-#                                                                         #
-# HISTORY:                                                                #
-#                                                                         #
-#  10-17-92 - created                                                     #
-#                                                                         #
-#  Rick Fishman                                                           #
-#  Code Blazers, Inc.                                                     #
-#  4113 Apricot                                                           #
-#  Irvine, CA. 92720                                                      #
-#  CIS ID: 72251,750                                                      #
-#                                                                         #
-###########################################################################
+# nmake makefile
+# 
+# Tools used:
+#  Compile::Resource Compiler
+#  Compile::GNU C
+#  Make: nmake
+all : nbbase.exe
 
-#DEBUGALLOC=-D__DEBUG_ALLOC__
+nbbase.exe : nbbase.obj nbbase.res nbbase.def
+	gcc -Zomf nbbase.obj nbbase.res nbbase.def -o nbbase.exe
+	wrc nbbase.res
 
-BASE=nbbase
+nbbase.obj : nbbase.c nbbase.h
+	gcc -Wall -Zomf -c -O2 nbbase.c -o nbbase.obj
 
-CFLAGS=/Q+ /Ss /W3 /Kbcepr /Gm- /Gd- /Ti+ /O- $(DEBUGALLOC) /C
-LFLAGS=/NOI /MAP /DE /NOL /A:16 /EXEPACK /BASE:65536
+nbbase.res : nbbase.rc
+	wrc -r nbbase.rc
 
-.SUFFIXES: .c
-
-.c.obj:
-    icc $(CFLAGS) $*.c
-
-$(BASE).exe: $*.obj $*.def $*.res
-    link386 $(LFLAGS) $*,,, os2386, $*
-    rc $*.res $*.exe
-
-$(BASE).res: $*.rc $*.dlg
-    rc -r $*
-
-$(BASE).obj: $*.c $*.h
-
-###########################################################################
-#                       E N D   O F   S O U R C E                         #
-###########################################################################
-
+clean :
+	rm -rf *exe *res *obj *dll

@@ -1,6 +1,6 @@
 /*********************************************************************
  *                                                                   *
- * MODULE NAME :  nbbase.h               AUTHOR:  Rick Fishman       *
+ * MODULE NAME :  nbbase.h               			     *
  * DATE WRITTEN:  10-17-92                                           *
  *                                                                   *
  * DESCRIPTION:                                                      *
@@ -12,13 +12,10 @@
  *  10-17-92 - File Created                                          *
  *  12-04-92 - Got rid of ulPageId and hwndDlg from NBPAGE structure *
  *                                                                   *
- *  Rick Fishman                                                     *
- *  Code Blazers, Inc.                                               *
- *  4113 Apricot                                                     *
- *  Irvine, CA. 92720                                                *
- *  CIS ID: 72251,750                                                *
  *                                                                   *
  *********************************************************************/
+
+#define PMERR_WIN_DEBUGMSG                  0x1037
 
 #define ID_NBWINFRAME           1
 #define ID_NB                   10
@@ -41,7 +38,7 @@
 
 #define NOTEBOOK_WINCLASS       "NoteBookSample"
 
-#define PROGRAM_TITLE           "Notebook Control Sample Program"
+#define PROGRAM_TITLE           (PCSZ) "Notebook Control Sample Program"
 
 #define HABERR( hab )           (ERRORIDERROR( WinGetLastError( hab ) ))
 
@@ -71,4 +68,3 @@ typedef struct _NBPAGE              // VARIABLES USED FOR A NOTEBOOK PAGE
 /****************************************************************************
  *                        E N D   O F   S O U R C E                         *
  ****************************************************************************/
-
